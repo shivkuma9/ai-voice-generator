@@ -3,122 +3,189 @@ import uuid
 import socket
 import asyncio
 from datetime import datetime
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import edge_tts
 
-app = FastAPI(title="AI Voice Generator")
+app = FastAPI(title="Persona AI Voice Generator")
+
+# Enable CORS for cross-device requests
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-# Support cloud environments like Vercel/Render where filesystem might be in /tmp
+# Support cloud environments like Render/Vercel where filesystem might be ephemeral
 if os.access(BASE_DIR, os.W_OK):
     OUTPUT_DIR = os.path.join(BASE_DIR, "output")
+    SAMPLES_DIR = os.path.join(BASE_DIR, "samples")
 else:
     OUTPUT_DIR = os.path.join("/tmp", "output")
+    SAMPLES_DIR = os.path.join("/tmp", "samples")
+
 STATIC_DIR = os.path.join(BASE_DIR, "static")
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
+os.makedirs(SAMPLES_DIR, exist_ok=True)
 os.makedirs(STATIC_DIR, exist_ok=True)
 
-# Curated popular natural female voices with human-friendly descriptions
+# 100% verified top-tier natural female voices
 POPULAR_FEMALE_VOICES = [
     {
         "id": "en-US-AvaNeural",
         "name": "Ava",
-        "accent": "US (American)",
+        "flag": "🇺🇸",
+        "accent": "US English",
         "tone": "Warm, Natural & Conversational",
-        "category": "Recommended"
+        "category": "Recommended",
+        "sample": "Hello! I am Ava. My voice is warm, natural, and friendly."
     },
     {
         "id": "en-US-JennyNeural",
         "name": "Jenny",
-        "accent": "US (American)",
-        "tone": "Friendly, Professional & Clear",
-        "category": "Recommended"
+        "flag": "🇺🇸",
+        "accent": "US English",
+        "tone": "Crisp, Clear & Professional",
+        "category": "Recommended",
+        "sample": "Hello! I am Jenny. I speak with a clear and professional tone."
     },
     {
         "id": "en-US-AriaNeural",
         "name": "Aria",
-        "accent": "US (American)",
+        "flag": "🇺🇸",
+        "accent": "US English",
         "tone": "Expressive, Storyteller & Podcast",
-        "category": "Recommended"
+        "category": "Recommended",
+        "sample": "Welcome! I am Aria. I love storytelling, narration, and podcasts."
     },
     {
-        "id": "en-US-EmmaNeural",
-        "name": "Emma",
-        "accent": "US (American)",
-        "tone": "Cheerful & Youthful",
-        "category": "US"
-    },
-    {
-        "id": "en-US-MichelleNeural",
-        "name": "Michelle",
-        "accent": "US (American)",
-        "tone": "Confident, Executive & News",
-        "category": "US"
-    },
-    {
-        "id": "en-GB-SoniaNeural",
-        "name": "Sonia",
-        "accent": "UK (British)",
-        "tone": "Crisp, Elegant & Polite",
-        "category": "UK"
-    },
-    {
-        "id": "en-GB-LibbyNeural",
-        "name": "Libby",
-        "accent": "UK (British)",
-        "tone": "Warm, Narrative & Storytelling",
-        "category": "UK"
-    },
-    {
-        "id": "en-GB-MaisieNeural",
-        "name": "Maisie",
-        "accent": "UK (British)",
-        "tone": "Youthful & Bright",
-        "category": "UK"
+        "id": "en-IN-NeerjaExpressiveNeural",
+        "name": "Neerja (Expressive)",
+        "flag": "🇮🇳",
+        "accent": "Indian English",
+        "tone": "Lively, Fluent & Expressive",
+        "category": "Recommended",
+        "sample": "Namaste! I am Neerja Expressive. Great to meet you!"
     },
     {
         "id": "en-IN-NeerjaNeural",
-        "name": "Neerja",
+        "name": "Neerja (Natural)",
+        "flag": "🇮🇳",
         "accent": "Indian English",
-        "tone": "Natural, Fluent & Expressive",
-        "category": "Indian"
-    },
-    {
-        "id": "en-IN-AnanyaNeural",
-        "name": "Ananya",
-        "accent": "Indian English",
-        "tone": "Soft, Modern & Clear",
-        "category": "Indian"
+        "tone": "Calm, Clear & Polite",
+        "category": "Indian",
+        "sample": "Hello! I am Neerja. I can read your articles and scripts naturally."
     },
     {
         "id": "hi-IN-SwaraNeural",
         "name": "Swara",
+        "flag": "🇮🇳",
         "accent": "Hindi / Hinglish",
-        "tone": "Melodic, Friendly & Expressive",
-        "category": "Indian"
+        "tone": "Melodic, Sweet & Fluent",
+        "category": "Indian",
+        "sample": "Namaste! Main Swara hoon. Aapka swagat hai."
+    },
+    {
+        "id": "en-GB-SoniaNeural",
+        "name": "Sonia",
+        "flag": "🇬🇧",
+        "accent": "British UK",
+        "tone": "Crisp, Elegant & Classic British",
+        "category": "UK",
+        "sample": "Good day! I am Sonia. I speak with an elegant British accent."
+    },
+    {
+        "id": "en-GB-LibbyNeural",
+        "name": "Libby",
+        "flag": "🇬🇧",
+        "accent": "British UK",
+        "tone": "Warm, Narrative & Storytelling",
+        "category": "UK",
+        "sample": "Hello! I am Libby. Perfect for audiobooks and gentle narration."
+    },
+    {
+        "id": "en-GB-MaisieNeural",
+        "name": "Maisie",
+        "flag": "🇬🇧",
+        "accent": "British UK",
+        "tone": "Youthful, Bright & Modern",
+        "category": "UK",
+        "sample": "Hi! I am Maisie. Bright, cheerful, and ready to help!"
+    },
+    {
+        "id": "en-US-EmmaNeural",
+        "name": "Emma",
+        "flag": "🇺🇸",
+        "accent": "US English",
+        "tone": "Cheerful, Casual & Engaging",
+        "category": "US",
+        "sample": "Hey there! I am Emma. Looking forward to reading your text."
+    },
+    {
+        "id": "en-US-MichelleNeural",
+        "name": "Michelle",
+        "flag": "🇺🇸",
+        "accent": "US English",
+        "tone": "Executive, Formal & News Anchor",
+        "category": "US",
+        "sample": "Greetings. I am Michelle. Ideal for corporate and broadcast scripts."
     },
     {
         "id": "en-AU-NatashaNeural",
         "name": "Natasha",
+        "flag": "🇦🇺",
         "accent": "Australian",
-        "tone": "Casual, Friendly & Clear",
-        "category": "International"
+        "tone": "Relaxed, Friendly & Upbeat",
+        "category": "International",
+        "sample": "G'day! I am Natasha with a friendly Australian accent."
     },
     {
         "id": "en-CA-ClaraNeural",
         "name": "Clara",
+        "flag": "🇨🇦",
         "accent": "Canadian",
-        "tone": "Neutral, Polite & Friendly",
-        "category": "International"
+        "tone": "Polite, Neutral & Smooth",
+        "category": "International",
+        "sample": "Hello! I am Clara, speaking with a smooth Canadian accent."
+    },
+    {
+        "id": "ta-IN-PallaviNeural",
+        "name": "Pallavi",
+        "flag": "🇮🇳",
+        "accent": "Tamil (India)",
+        "tone": "Traditional & Fluent Tamil",
+        "category": "Regional",
+        "sample": "Vanakkam! Naan Pallavi."
+    },
+    {
+        "id": "te-IN-ShrutiNeural",
+        "name": "Shruti",
+        "flag": "🇮🇳",
+        "accent": "Telugu (India)",
+        "tone": "Clear & Pleasant Telugu",
+        "category": "Regional",
+        "sample": "Namaskaram! Nenu Shruti."
+    },
+    {
+        "id": "mr-IN-AarohiNeural",
+        "name": "Aarohi",
+        "flag": "🇮🇳",
+        "accent": "Marathi (India)",
+        "tone": "Warm & Expressive Marathi",
+        "category": "Regional",
+        "sample": "Namaskar! Mee Aarohi."
     }
 ]
 
 def get_local_ip():
-    """Detect local WiFi / LAN IP address for phone connection"""
+    """Detect local WiFi / LAN IP address for local running"""
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect(("8.8.8.8", 80))
@@ -131,42 +198,49 @@ def get_local_ip():
 class GenerateRequest(BaseModel):
     text: str
     voice: str = "en-US-AvaNeural"
-    rate: int = 0      # Speed offset (-50 to +50 percent)
-    pitch: int = 0     # Pitch offset (-50 to +50 Hz)
+    rate: int = 0      # Speed offset (-40 to +40 percent)
+    pitch: int = 0     # Pitch offset (-30 to +30 Hz)
 
 @app.get("/api/info")
-async def get_info():
+async def get_info(request: Request):
     ip = get_local_ip()
     port = int(os.environ.get("PORT", 5050))
+    host = request.headers.get("host", f"{ip}:{port}")
+    scheme = "https" if "render.com" in host or request.headers.get("x-forwarded-proto") == "https" else "http"
+    public_url = f"{scheme}://{host}"
+
     return {
         "local_ip": ip,
         "port": port,
-        "phone_url": f"http://{ip}:{port}",
+        "public_url": public_url,
+        "phone_url": public_url,
         "local_url": f"http://localhost:{port}"
     }
 
 @app.get("/api/voices")
 async def list_voices():
-    try:
-        all_voices = await edge_tts.list_voices()
-        female_all = [
-            {
-                "id": v["ShortName"],
-                "name": v["FriendlyName"].split("-")[0].strip(),
-                "locale": v["Locale"],
-                "gender": v["Gender"]
-            }
-            for v in all_voices if v.get("Gender") == "Female"
-        ]
-        return {
-            "curated": POPULAR_FEMALE_VOICES,
-            "all_female": female_all
-        }
-    except Exception as e:
-        return {
-            "curated": POPULAR_FEMALE_VOICES,
-            "all_female": []
-        }
+    return {
+        "curated": POPULAR_FEMALE_VOICES
+    }
+
+@app.get("/api/sample/{voice_id}")
+async def get_sample(voice_id: str):
+    voice_obj = next((v for v in POPULAR_FEMALE_VOICES if v["id"] == voice_id), None)
+    if not voice_obj:
+        raise HTTPException(status_code=404, detail="Voice not found")
+
+    sample_file = os.path.join(SAMPLES_DIR, f"{voice_id}.mp3")
+    if not os.path.exists(sample_file):
+        try:
+            communicate = edge_tts.Communicate(
+                text=voice_obj["sample"],
+                voice=voice_id
+            )
+            await communicate.save(sample_file)
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
+
+    return FileResponse(sample_file, media_type="audio/mpeg", filename=f"{voice_id}_sample.mp3")
 
 @app.post("/api/generate")
 async def generate_voice(req: GenerateRequest):
@@ -176,7 +250,6 @@ async def generate_voice(req: GenerateRequest):
     if len(text) > 10000:
         raise HTTPException(status_code=400, detail="Text exceeds 10,000 character limit.")
 
-    # Format rate and pitch
     rate_str = f"{req.rate:+d}%" if req.rate != 0 else "+0%"
     pitch_str = f"{req.pitch:+d}Hz" if req.pitch != 0 else "+0Hz"
 
@@ -222,15 +295,14 @@ async def get_history():
                     "size_kb": round(stat.st_size / 1024, 1),
                     "time": datetime.fromtimestamp(stat.st_mtime).strftime("%I:%M %p")
                 })
-    return {"history": files[:15]}
+    return {"history": files[:10]}
 
-# Serve index.html directly from static
 @app.get("/")
 async def root():
     index_path = os.path.join(STATIC_DIR, "index.html")
     if os.path.exists(index_path):
         return FileResponse(index_path)
-    return {"status": "running"}
+    return {"status": "Persona AI Voice Running"}
 
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
