@@ -2,6 +2,7 @@ import os
 import uuid
 import socket
 import asyncio
+import time
 from datetime import datetime
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.staticfiles import StaticFiles
@@ -12,7 +13,6 @@ import edge_tts
 
 app = FastAPI(title="Persona AI Voice Generator")
 
-# Enable CORS for cross-device requests
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -22,7 +22,6 @@ app.add_middleware(
 )
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-# Support cloud environments like Render/Vercel where filesystem might be ephemeral
 if os.access(BASE_DIR, os.W_OK):
     OUTPUT_DIR = os.path.join(BASE_DIR, "output")
     SAMPLES_DIR = os.path.join(BASE_DIR, "samples")
@@ -36,14 +35,38 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 os.makedirs(SAMPLES_DIR, exist_ok=True)
 os.makedirs(STATIC_DIR, exist_ok=True)
 
-# 100% verified top-tier natural female voices
+# Auto cleanup helper to prevent disk space issues
+def cleanup_old_audio(max_files=20, max_age_hours=2):
+    try:
+        if not os.path.exists(OUTPUT_DIR):
+            return
+        now = time.time()
+        files = []
+        for f in os.listdir(OUTPUT_DIR):
+            if f.endswith(".mp3"):
+                p = os.path.join(OUTPUT_DIR, f)
+                files.append((p, os.path.getmtime(p)))
+
+        # Sort newest first
+        files.sort(key=lambda x: x[1], reverse=True)
+
+        # Remove files beyond max_files or older than max_age_hours
+        for i, (path, mtime) in enumerate(files):
+            if i >= max_files or (now - mtime) > (max_age_hours * 3600):
+                try:
+                    os.remove(path)
+                except Exception:
+                    pass
+    except Exception:
+        pass
+
 POPULAR_FEMALE_VOICES = [
     {
         "id": "en-US-AvaNeural",
         "name": "Ava",
         "flag": "🇺🇸",
         "accent": "US English",
-        "tone": "Warm, Natural & Conversational",
+        "tone": "Warm, Intimate & Conversational",
         "category": "Recommended",
         "sample": "Hello! I am Ava. My voice is warm, natural, and friendly."
     },
@@ -106,7 +129,7 @@ POPULAR_FEMALE_VOICES = [
         "name": "Libby",
         "flag": "🇬🇧",
         "accent": "British UK",
-        "tone": "Warm, Narrative & Storytelling",
+        "tone": "Warm, Velvet & Storytelling",
         "category": "UK",
         "sample": "Hello! I am Libby. Perfect for audiobooks and gentle narration."
     },
@@ -185,7 +208,6 @@ POPULAR_FEMALE_VOICES = [
 ]
 
 def get_local_ip():
-    """Detect local WiFi / LAN IP address for local running"""
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect(("8.8.8.8", 80))
@@ -198,8 +220,8 @@ def get_local_ip():
 class GenerateRequest(BaseModel):
     text: str
     voice: str = "en-US-AvaNeural"
-    rate: int = 0      # Speed offset (-40 to +40 percent)
-    pitch: int = 0     # Pitch offset (-30 to +30 Hz)
+    rate: int = 0
+    pitch: int = 0
 
 @app.get("/api/info")
 async def get_info(request: Request):
@@ -247,8 +269,11 @@ async def generate_voice(req: GenerateRequest):
     text = req.text.strip()
     if not text:
         raise HTTPException(status_code=400, detail="Text cannot be empty.")
-    if len(text) > 10000:
-        raise HTTPException(status_code=400, detail="Text exceeds 10,000 character limit.")
+    if len(text) > 25000:
+        raise HTTPException(status_code=400, detail="Text exceeds 25,000 character limit.")
+
+    # Run auto-cleanup before generating new file
+    cleanup_old_audio(max_files=15, max_age_hours=2)
 
     rate_str = f"{req.rate:+d}%" if req.rate != 0 else "+0%"
     pitch_str = f"{req.pitch:+d}Hz" if req.pitch != 0 else "+0Hz"
@@ -281,21 +306,52 @@ async def get_audio(filename: str):
         raise HTTPException(status_code=404, detail="Audio file not found")
     return FileResponse(file_path, media_type="audio/mpeg", filename=filename)
 
+@app.delete("/api/audio/{filename}")
+async def delete_audio(filename: str):
+    file_path = os.path.join(OUTPUT_DIR, filename)
+    if os.path.exists(file_path):
+        try:
+            os.remove(file_path)
+            return {"success": True, "message": f"Deleted {filename}"}
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=str(e))
+    return {"success": True, "message": "File already removed"}
+
+@app.delete("/api/history")
+async def clear_all_history():
+    deleted_count = 0
+    if os.path.exists(OUTPUT_DIR):
+        for f in os.listdir(OUTPUT_DIR):
+            if f.endswith(".mp3"):
+                try:
+                    os.remove(os.path.join(OUTPUT_DIR, f))
+                    deleted_count += 1
+                except Exception:
+                    pass
+    return {"success": True, "deleted_count": deleted_count, "message": "All audio storage cleared"}
+
 @app.get("/api/history")
 async def get_history():
     files = []
+    total_kb = 0
     if os.path.exists(OUTPUT_DIR):
         for f in sorted(os.listdir(OUTPUT_DIR), reverse=True):
             if f.endswith(".mp3"):
                 file_path = os.path.join(OUTPUT_DIR, f)
                 stat = os.stat(file_path)
+                size_kb = round(stat.st_size / 1024, 1)
+                total_kb += size_kb
                 files.append({
                     "filename": f,
                     "audio_url": f"/api/audio/{f}",
-                    "size_kb": round(stat.st_size / 1024, 1),
+                    "size_kb": size_kb,
                     "time": datetime.fromtimestamp(stat.st_mtime).strftime("%I:%M %p")
                 })
-    return {"history": files[:10]}
+    return {
+        "history": files[:15],
+        "total_kb": round(total_kb, 1),
+        "total_files": len(files)
+    }
 
 @app.get("/")
 async def root():

@@ -115,7 +115,7 @@
             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> LIVE
           </span>
         </div>
-        <p class="text-xs text-slate-400">Natural Storytelling & Roleplay AI Voices</p>
+        <p class="text-xs text-slate-400">Natural Storytelling & Roleplay Female Voices</p>
       </div>
     </div>
 
@@ -155,10 +155,10 @@
       <!-- Quick Sample Chips -->
       <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-2 text-xs">
         <span class="text-[11px] text-slate-500 shrink-0 font-medium mr-0.5">Roleplay:</span>
+        <button onclick="setSample('sultry')" class="shrink-0 bg-pink-950/60 hover:bg-pink-900/80 hover:text-pink-100 text-pink-300 border border-pink-800/60 px-2.5 py-1 rounded-lg transition active:scale-95 font-medium">🌹 Sultry / Intimate</button>
         <button onclick="setSample('adventure')" class="shrink-0 bg-slate-800/80 hover:bg-purple-900/50 hover:text-purple-200 text-slate-300 border border-slate-700/60 px-2.5 py-1 rounded-lg transition active:scale-95">⚔️ Fantasy Adventure</button>
         <button onclick="setSample('mystery')" class="shrink-0 bg-slate-800/80 hover:bg-purple-900/50 hover:text-purple-200 text-slate-300 border border-slate-700/60 px-2.5 py-1 rounded-lg transition active:scale-95">🤫 Stealth Mystery</button>
-        <button onclick="setSample('companion')" class="shrink-0 bg-slate-800/80 hover:bg-purple-900/50 hover:text-purple-200 text-slate-300 border border-slate-700/60 px-2.5 py-1 rounded-lg transition active:scale-95">💬 Companion Dialogue</button>
-        <button onclick="setSample('greeting')" class="shrink-0 bg-slate-800/80 hover:bg-purple-900/50 hover:text-purple-200 text-slate-300 border border-slate-700/60 px-2.5 py-1 rounded-lg transition active:scale-95">👋 Greeting</button>
+        <button onclick="setSample('companion')" class="shrink-0 bg-slate-800/80 hover:bg-purple-900/50 hover:text-purple-200 text-slate-300 border border-slate-700/60 px-2.5 py-1 rounded-lg transition active:scale-95">💬 Companion</button>
       </div>
 
       <div class="relative mt-1">
@@ -167,10 +167,17 @@
         
         <div class="flex flex-wrap justify-between items-center text-[11px] text-slate-400 mt-1.5 px-1 gap-2">
           <span id="charCount">0 characters • 0 words</span>
-          <label class="flex items-center gap-1.5 cursor-pointer text-slate-400 hover:text-purple-300 transition select-none">
-            <input type="checkbox" id="cleanMarkdown" checked class="accent-purple-500 rounded">
-            <span>Clean Asterisks (*actions*)</span>
-          </label>
+          
+          <div class="flex items-center gap-3">
+            <label class="flex items-center gap-1.5 cursor-pointer text-slate-400 hover:text-purple-300 transition select-none">
+              <input type="checkbox" id="cleanMarkdown" checked class="accent-purple-500 rounded">
+              <span>Clean Asterisks (*actions*)</span>
+            </label>
+            <label class="flex items-center gap-1.5 cursor-pointer text-slate-400 hover:text-purple-300 transition select-none">
+              <input type="checkbox" id="autoClearText" class="accent-purple-500 rounded">
+              <span>Auto-Clear Text</span>
+            </label>
+          </div>
         </div>
       </div>
     </section>
@@ -180,7 +187,7 @@
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
         <div>
           <label class="text-xs sm:text-sm font-bold text-slate-200 uppercase tracking-wider block">
-            2. Choose Character Voice
+            2. Choose Character Voice (100% Female)
           </label>
           <p class="text-[11px] sm:text-xs text-slate-400">Tap ▶ to listen to a voice preview</p>
         </div>
@@ -197,11 +204,11 @@
       </div>
 
       <!-- Voices Grid -->
-      <div id="voicesGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-72 overflow-y-auto pr-1 custom-scrollbar">
+      <div id="voicesGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-64 overflow-y-auto pr-1 custom-scrollbar">
         <!-- Rendered by JS -->
       </div>
 
-      <!-- 3. 🎭 EMOTION & ROLEPLAY PRESETS (NEW!) -->
+      <!-- 3. 🎭 EMOTION & ROLEPLAY PRESETS (INCLUDES SULTRY / SEDUCTIVE) -->
       <div class="mt-4 pt-3.5 border-t border-slate-800/80">
         <div class="flex items-center justify-between mb-2">
           <div class="flex items-center gap-1.5">
@@ -212,64 +219,88 @@
         </div>
 
         <!-- Emotion Preset Buttons Grid -->
-        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
-          <button onclick="applyEmotion('normal')" id="emo-normal" class="emotion-btn active p-2 rounded-xl text-left flex items-center gap-2 bg-slate-900/60">
-            <span class="text-lg">🎭</span>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <!-- 🌹 Sultry / Seductive Preset -->
+          <button onclick="applyEmotion('sultry')" id="emo-sultry" class="emotion-btn p-2 rounded-xl text-left flex items-center gap-2 bg-slate-900/60">
+            <span class="text-lg">🌹</span>
             <div>
-              <div class="text-xs font-bold leading-tight">Storyteller</div>
-              <div class="text-[10px] text-slate-400">Natural & Balanced</div>
+              <div class="text-xs font-bold text-pink-300 leading-tight">Sultry / Intimate</div>
+              <div class="text-[10px] text-slate-400">Soft, slow & breathy</div>
             </div>
           </button>
 
+          <!-- 🤫 Whisper / Stealth -->
           <button onclick="applyEmotion('whisper')" id="emo-whisper" class="emotion-btn p-2 rounded-xl text-left flex items-center gap-2 bg-slate-900/60">
             <span class="text-lg">🤫</span>
             <div>
               <div class="text-xs font-bold leading-tight">Whisper / Stealth</div>
-              <div class="text-[10px] text-slate-400">Quiet & Deep</div>
+              <div class="text-[10px] text-slate-400">Quiet & deep</div>
             </div>
           </button>
 
+          <!-- 🎭 Storyteller -->
+          <button onclick="applyEmotion('normal')" id="emo-normal" class="emotion-btn active p-2 rounded-xl text-left flex items-center gap-2 bg-slate-900/60">
+            <span class="text-lg">🎭</span>
+            <div>
+              <div class="text-xs font-bold leading-tight">Storyteller</div>
+              <div class="text-[10px] text-slate-400">Natural & balanced</div>
+            </div>
+          </button>
+
+          <!-- ⚔️ Action / Urgent -->
           <button onclick="applyEmotion('action')" id="emo-action" class="emotion-btn p-2 rounded-xl text-left flex items-center gap-2 bg-slate-900/60">
             <span class="text-lg">⚔️</span>
             <div>
               <div class="text-xs font-bold leading-tight">Action / Urgent</div>
-              <div class="text-[10px] text-slate-400">Fast & Energetic</div>
+              <div class="text-[10px] text-slate-400">Fast & energetic</div>
             </div>
           </button>
 
+          <!-- ✨ Cheerful -->
           <button onclick="applyEmotion('cheerful')" id="emo-cheerful" class="emotion-btn p-2 rounded-xl text-left flex items-center gap-2 bg-slate-900/60">
             <span class="text-lg">✨</span>
             <div>
               <div class="text-xs font-bold leading-tight">Cheerful / Cute</div>
-              <div class="text-[10px] text-slate-400">High & Playful</div>
+              <div class="text-[10px] text-slate-400">High & playful</div>
             </div>
           </button>
 
+          <!-- 🥺 Dramatic / Sad -->
           <button onclick="applyEmotion('dramatic')" id="emo-dramatic" class="emotion-btn p-2 rounded-xl text-left flex items-center gap-2 bg-slate-900/60">
             <span class="text-lg">🥺</span>
             <div>
               <div class="text-xs font-bold leading-tight">Dramatic / Sad</div>
-              <div class="text-[10px] text-slate-400">Slow & Somber</div>
+              <div class="text-[10px] text-slate-400">Slow & emotional</div>
             </div>
           </button>
 
+          <!-- 🧙 Mystic / Boss -->
           <button onclick="applyEmotion('boss')" id="emo-boss" class="emotion-btn p-2 rounded-xl text-left flex items-center gap-2 bg-slate-900/60">
             <span class="text-lg">🧙</span>
             <div>
               <div class="text-xs font-bold leading-tight">Mystic / Boss</div>
-              <div class="text-[10px] text-slate-400">Deep & Slow</div>
+              <div class="text-[10px] text-slate-400">Deep & imposing</div>
+            </div>
+          </button>
+
+          <!-- 🌸 Velvet Gentle -->
+          <button onclick="applyEmotion('velvet')" id="emo-velvet" class="emotion-btn p-2 rounded-xl text-left flex items-center gap-2 bg-slate-900/60">
+            <span class="text-lg">🌸</span>
+            <div>
+              <div class="text-xs font-bold leading-tight">Velvet Gentle</div>
+              <div class="text-[10px] text-slate-400">Gentle UK narrator</div>
             </div>
           </button>
         </div>
 
-        <!-- Manual Sliders (Collapsible / Fine-Tuning) -->
+        <!-- Manual Sliders (Fine-Tuning) -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
           <div class="bg-slate-900/40 p-2 rounded-xl border border-slate-800/60">
             <div class="flex justify-between items-center text-[11px] text-slate-300 mb-1">
               <span>Speech Speed</span>
               <span id="rateLabel" class="text-purple-400 font-bold">Normal (0%)</span>
             </div>
-            <input id="rateRange" type="range" min="-30" max="30" step="5" value="0" class="w-full accent-purple-500 cursor-pointer">
+            <input id="rateRange" type="range" min="-30" max="30" step="2" value="0" class="w-full accent-purple-500 cursor-pointer">
           </div>
 
           <div class="bg-slate-900/40 p-2 rounded-xl border border-slate-800/60">
@@ -277,7 +308,7 @@
               <span>Voice Pitch</span>
               <span id="pitchLabel" class="text-purple-400 font-bold">Normal (0Hz)</span>
             </div>
-            <input id="pitchRange" type="range" min="-25" max="25" step="5" value="0" class="w-full accent-purple-500 cursor-pointer">
+            <input id="pitchRange" type="range" min="-25" max="25" step="2" value="0" class="w-full accent-purple-500 cursor-pointer">
           </div>
         </div>
       </div>
@@ -321,13 +352,27 @@
       </div>
     </section>
 
-    <!-- 6. Recent Generations -->
+    <!-- 6. Recent Generations & Storage Freeing -->
     <section class="glass-panel rounded-2xl p-4 shadow-lg">
-      <div class="flex items-center justify-between mb-2">
-        <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Recent Audio</h3>
-        <button onclick="loadHistory()" class="text-xs text-slate-400 hover:text-purple-300">Refresh</button>
+      <div class="flex items-center justify-between mb-2.5">
+        <div class="flex items-center gap-2">
+          <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Audio Storage</h3>
+          <span id="storageInfo" class="text-[10px] text-slate-400 bg-slate-800/80 px-2 py-0.5 rounded-full font-mono">0 KB</span>
+        </div>
+        
+        <div class="flex items-center gap-2">
+          <!-- 1-Click Clear All Storage -->
+          <button onclick="clearAllAudio()" class="flex items-center gap-1 text-[11px] text-rose-300 hover:text-rose-200 bg-rose-950/60 hover:bg-rose-900/80 border border-rose-800/50 px-2 py-0.5 rounded-lg transition active:scale-95">
+            <svg class="w-3 h-3 text-rose-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+            <span>Free Space</span>
+          </button>
+          <button onclick="loadHistory()" class="text-xs text-slate-400 hover:text-purple-300">Refresh</button>
+        </div>
       </div>
-      <div id="historyList" class="space-y-2 max-h-48 overflow-y-auto custom-scrollbar">
+
+      <div id="historyList" class="space-y-2 max-h-52 overflow-y-auto custom-scrollbar">
         <div class="text-xs text-slate-500 py-3 text-center">No audio generated yet in this session.</div>
       </div>
     </section>
@@ -368,24 +413,26 @@
   <!-- Application Logic -->
   <script>
     let curatedVoices = [];
-    let selectedVoiceId = "en-US-AriaNeural"; // Default to Aria for Storytelling!
+    let selectedVoiceId = "en-US-AvaNeural";
     let activeFilter = "Recommended";
     let playingSampleVoiceId = null;
 
     const samples = {
+      sultry: "Come a little closer... you don't have to face the cold shadows alone tonight. Stay with me... just like this.",
       adventure: "The ancient dragon opened its glowing emerald eyes. 'You dare step into my sanctuary, mortal?' The cavern shook as smoke rolled across the stone floor.",
       mystery: "Wait... don't move. Listen closely. There is something lurking right above us in the rafters... reach for your dagger, slowly.",
-      companion: "I've got your back! Whatever is waiting on the other side of this dungeon portal, we take it on together. Ready when you are!",
-      greeting: "Greetings adventurer! I am your AI companion and narrator. Paste your Gemini roleplay story, and I will bring your characters to life."
+      companion: "I've got your back! Whatever is waiting on the other side of this dungeon portal, we take it on together. Ready when you are!"
     };
 
     const emotionPresets = {
-      normal:   { rate: 0,   pitch: 0,   voice: 'en-US-AriaNeural' },
+      sultry:   { rate: -12, pitch: -6,  voice: 'en-US-AvaNeural' },
       whisper:  { rate: -15, pitch: -15, voice: 'en-US-AriaNeural' },
+      normal:   { rate: 0,   pitch: 0,   voice: 'en-US-AriaNeural' },
       action:   { rate: 15,  pitch: 10,  voice: 'en-IN-NeerjaExpressiveNeural' },
       cheerful: { rate: 10,  pitch: 15,  voice: 'en-US-EmmaNeural' },
       dramatic: { rate: -20, pitch: -10, voice: 'en-GB-LibbyNeural' },
-      boss:     { rate: -20, pitch: -20, voice: 'en-US-AriaNeural' }
+      boss:     { rate: -20, pitch: -20, voice: 'en-US-AriaNeural' },
+      velvet:   { rate: -10, pitch: -4,  voice: 'en-GB-LibbyNeural' }
     };
 
     function applyEmotion(type) {
@@ -398,7 +445,6 @@
       pitchRange.value = preset.pitch;
       updateSliderLabels();
 
-      // Optionally select recommended character voice if not already changed
       if (preset.voice) {
         selectVoice(preset.voice);
       }
@@ -420,7 +466,8 @@
       const textarea = document.getElementById('textInput');
       textarea.value = samples[type] || "";
       updateCounters();
-      if (type === 'mystery') applyEmotion('whisper');
+      if (type === 'sultry') applyEmotion('sultry');
+      else if (type === 'mystery') applyEmotion('whisper');
       else if (type === 'adventure') applyEmotion('normal');
       else if (type === 'companion') applyEmotion('cheerful');
     }
@@ -455,7 +502,6 @@
     rateRange.addEventListener('input', updateSliderLabels);
     pitchRange.addEventListener('input', updateSliderLabels);
 
-    // App Initialization
     async function initApp() {
       try {
         const liveUrl = window.location.origin;
@@ -582,13 +628,11 @@
         return;
       }
 
-      // If Clean Markdown option is checked, strip asterisks and clean RPG markdown
       if (document.getElementById('cleanMarkdown').checked) {
-        // Strip markdown asterisks like **bold** or *whisper*
         text = text.replace(/\*\*(.*?)\*\*/g, '$1')
                    .replace(/\*(.*?)\*/g, '$1')
-                   .replace(/^#+\s+/gm, '') // Remove # headers
-                   .replace(/`{1,3}.*?`{1,3}/gs, ''); // Remove codeblocks
+                   .replace(/^#+\s+/gm, '')
+                   .replace(/`{1,3}.*?`{1,3}/gs, '');
       }
 
       const btn = document.getElementById('generateBtn');
@@ -615,6 +659,12 @@
 
         const data = await res.json();
         showPlayer(data.audio_url, data.preview_text);
+        
+        // Auto-clear text if user checked the box
+        if (document.getElementById('autoClearText').checked) {
+          clearText();
+        }
+
         loadHistory();
       } catch (err) {
         alert("Generation error: " + err.message);
@@ -639,14 +689,18 @@
       audioPlayer.play().catch(() => {});
     }
 
+    // History & Storage Freeing
     async function loadHistory() {
       try {
         const res = await fetch('/api/history');
         const data = await res.json();
         const list = document.getElementById('historyList');
+        const storageInfo = document.getElementById('storageInfo');
+
+        storageInfo.textContent = `${data.total_files || 0} files (${data.total_kb || 0} KB)`;
 
         if (!data.history || data.history.length === 0) {
-          list.innerHTML = '<div class="text-xs text-slate-500 py-3 text-center">No audio generated yet in this session.</div>';
+          list.innerHTML = '<div class="text-xs text-slate-500 py-3 text-center">No audio files stored on server.</div>';
           return;
         }
 
@@ -664,16 +718,44 @@
                 <span class="text-[10px] text-slate-500">${item.time} • ${item.size_kb} KB</span>
               </div>
             </div>
-            <a href="${item.audio_url}" download="${item.filename}" class="text-slate-400 hover:text-emerald-400 p-1.5 transition shrink-0">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-              </svg>
-            </a>
+            
+            <div class="flex items-center gap-1 shrink-0">
+              <a href="${item.audio_url}" download="${item.filename}" class="text-slate-400 hover:text-emerald-400 p-1.5 transition" title="Download">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+              </a>
+              <button onclick="deleteAudioFile('${item.filename}')" class="text-slate-500 hover:text-rose-400 p-1.5 transition" title="Delete from server">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
+            </div>
           `;
           list.appendChild(row);
         });
       } catch (e) {
         console.error("History error:", e);
+      }
+    }
+
+    async function deleteAudioFile(filename) {
+      try {
+        await fetch(`/api/audio/${filename}`, { method: 'DELETE' });
+        loadHistory();
+      } catch (e) {
+        alert("Failed to delete file");
+      }
+    }
+
+    async function clearAllAudio() {
+      if (!confirm("Delete all generated audio files from the server to free space?")) return;
+      try {
+        await fetch('/api/history', { method: 'DELETE' });
+        loadHistory();
+        document.getElementById('playerCard').classList.add('hidden');
+      } catch (e) {
+        alert("Failed to clear audio files");
       }
     }
 
