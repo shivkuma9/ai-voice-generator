@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#090d16">
-  <title>Persona AI • Studio Female Voices</title>
+  <title>Persona AI • Studio Female Voices & Roleplay</title>
   
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -46,6 +46,17 @@
       background: rgba(88, 28, 135, 0.35);
       box-shadow: 0 0 20px rgba(168, 85, 247, 0.25);
     }
+    .emotion-btn {
+      transition: all 0.15s ease;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .emotion-btn.active {
+      background: linear-gradient(135deg, #7e22ce, #db2777);
+      border-color: #f472b6;
+      color: #ffffff;
+      box-shadow: 0 0 14px rgba(219, 39, 119, 0.35);
+      font-weight: 700;
+    }
     .no-scrollbar::-webkit-scrollbar {
       display: none;
     }
@@ -61,7 +72,6 @@
       background: rgba(255, 255, 255, 0.15);
       border-radius: 9999px;
     }
-    /* Wave animation */
     .sound-wave {
       display: inline-flex;
       align-items: center;
@@ -88,10 +98,10 @@
   <!-- Audio Player for Voice Samples -->
   <audio id="samplePlayer" class="hidden"></audio>
 
-  <!-- Sticky Top Header -->
-  <header class="max-w-3xl mx-auto mb-5 sm:mb-7 flex items-center justify-between">
+  <!-- Top Header -->
+  <header class="max-w-3xl mx-auto mb-4 sm:mb-6 flex items-center justify-between">
     <div class="flex items-center gap-3">
-      <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-tr from-purple-600 via-pink-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-purple-500/25">
+      <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-tr from-purple-600 via-pink-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-purple-500/25 shrink-0">
         <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
         </svg>
@@ -105,11 +115,11 @@
             <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> LIVE
           </span>
         </div>
-        <p class="text-xs text-slate-400">Ultra-Realistic Human Female Voices</p>
+        <p class="text-xs text-slate-400">Natural Storytelling & Roleplay AI Voices</p>
       </div>
     </div>
 
-    <!-- Mobile / Share Button -->
+    <!-- Share Button -->
     <button onclick="handleShare()" class="flex items-center gap-1.5 bg-slate-800/90 hover:bg-slate-700/90 border border-slate-700/80 text-white text-xs sm:text-sm font-semibold px-3 py-2 sm:px-3.5 sm:py-2 rounded-xl transition active:scale-95 shadow-sm">
       <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
@@ -120,47 +130,62 @@
   </header>
 
   <!-- Main Container -->
-  <main class="max-w-3xl mx-auto space-y-5">
+  <main class="max-w-3xl mx-auto space-y-4 sm:space-y-5">
 
     <!-- 1. Text Input Area -->
     <section class="glass-panel rounded-2xl p-4 sm:p-5 shadow-xl">
-      <div class="flex items-center justify-between mb-2.5">
+      <div class="flex items-center justify-between mb-2">
         <label for="textInput" class="text-xs sm:text-sm font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
-          <span>1. Script / Text</span>
+          <span>1. Script / Gemini Roleplay Text</span>
         </label>
-        <button onclick="clearText()" class="text-xs text-slate-400 hover:text-rose-400 transition">Clear</button>
+        
+        <div class="flex items-center gap-2">
+          <!-- 1-Tap Paste Button -->
+          <button onclick="pasteFromClipboard()" class="flex items-center gap-1 bg-purple-900/60 hover:bg-purple-800/80 text-purple-200 border border-purple-700/50 text-xs font-semibold px-2.5 py-1 rounded-lg transition active:scale-95 shadow-sm">
+            <svg class="w-3.5 h-3.5 text-purple-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+            <span>Paste</span>
+          </button>
+          
+          <button onclick="clearText()" class="text-xs text-slate-400 hover:text-rose-400 px-1 py-1 transition">Clear</button>
+        </div>
       </div>
 
-      <!-- Quick Sample Chips (Horizontal Scroll on Mobile) -->
+      <!-- Quick Sample Chips -->
       <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-2 text-xs">
-        <span class="text-[11px] text-slate-500 shrink-0 font-medium mr-1">Samples:</span>
+        <span class="text-[11px] text-slate-500 shrink-0 font-medium mr-0.5">Roleplay:</span>
+        <button onclick="setSample('adventure')" class="shrink-0 bg-slate-800/80 hover:bg-purple-900/50 hover:text-purple-200 text-slate-300 border border-slate-700/60 px-2.5 py-1 rounded-lg transition active:scale-95">⚔️ Fantasy Adventure</button>
+        <button onclick="setSample('mystery')" class="shrink-0 bg-slate-800/80 hover:bg-purple-900/50 hover:text-purple-200 text-slate-300 border border-slate-700/60 px-2.5 py-1 rounded-lg transition active:scale-95">🤫 Stealth Mystery</button>
+        <button onclick="setSample('companion')" class="shrink-0 bg-slate-800/80 hover:bg-purple-900/50 hover:text-purple-200 text-slate-300 border border-slate-700/60 px-2.5 py-1 rounded-lg transition active:scale-95">💬 Companion Dialogue</button>
         <button onclick="setSample('greeting')" class="shrink-0 bg-slate-800/80 hover:bg-purple-900/50 hover:text-purple-200 text-slate-300 border border-slate-700/60 px-2.5 py-1 rounded-lg transition active:scale-95">👋 Greeting</button>
-        <button onclick="setSample('story')" class="shrink-0 bg-slate-800/80 hover:bg-purple-900/50 hover:text-purple-200 text-slate-300 border border-slate-700/60 px-2.5 py-1 rounded-lg transition active:scale-95">📖 Story</button>
-        <button onclick="setSample('ad')" class="shrink-0 bg-slate-800/80 hover:bg-purple-900/50 hover:text-purple-200 text-slate-300 border border-slate-700/60 px-2.5 py-1 rounded-lg transition active:scale-95">📢 Commercial</button>
-        <button onclick="setSample('hindi')" class="shrink-0 bg-slate-800/80 hover:bg-purple-900/50 hover:text-purple-200 text-slate-300 border border-slate-700/60 px-2.5 py-1 rounded-lg transition active:scale-95">🇮🇳 Hindi/Hinglish</button>
       </div>
 
       <div class="relative mt-1">
-        <textarea id="textInput" rows="4" placeholder="Enter what you want the AI female voice to say here..."
+        <textarea id="textInput" rows="5" placeholder="Paste your Gemini roleplay story or script here... (supports long texts without Error 13!)"
           class="w-full bg-slate-900/90 border border-slate-700/70 rounded-xl p-3 sm:p-3.5 text-sm sm:text-base text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/70 transition resize-y custom-scrollbar leading-relaxed"></textarea>
-        <div class="flex justify-between items-center text-[11px] text-slate-400 mt-1.5 px-1">
+        
+        <div class="flex flex-wrap justify-between items-center text-[11px] text-slate-400 mt-1.5 px-1 gap-2">
           <span id="charCount">0 characters • 0 words</span>
-          <span class="text-slate-500">Fast Neural Synthesis</span>
+          <label class="flex items-center gap-1.5 cursor-pointer text-slate-400 hover:text-purple-300 transition select-none">
+            <input type="checkbox" id="cleanMarkdown" checked class="accent-purple-500 rounded">
+            <span>Clean Asterisks (*actions*)</span>
+          </label>
         </div>
       </div>
     </section>
 
     <!-- 2. Voice Selector -->
     <section class="glass-panel rounded-2xl p-4 sm:p-5 shadow-xl">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-3">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
         <div>
           <label class="text-xs sm:text-sm font-bold text-slate-200 uppercase tracking-wider block">
-            2. Choose Female Voice
+            2. Choose Character Voice
           </label>
           <p class="text-[11px] sm:text-xs text-slate-400">Tap ▶ to listen to a voice preview</p>
         </div>
 
-        <!-- Filter Tabs (Horizontal Scrollable) -->
+        <!-- Filter Tabs -->
         <div class="flex items-center gap-1 overflow-x-auto no-scrollbar p-1 bg-slate-900/90 rounded-xl border border-slate-800/80 text-xs shrink-0">
           <button onclick="filterVoices('Recommended')" class="tab-btn active px-2.5 py-1 rounded-lg font-semibold bg-purple-600 text-white transition shrink-0" data-filter="Recommended">⭐ Popular</button>
           <button onclick="filterVoices('Indian')" class="tab-btn px-2.5 py-1 rounded-lg font-medium text-slate-400 hover:text-white transition shrink-0" data-filter="Indian">🇮🇳 Indian</button>
@@ -172,62 +197,103 @@
       </div>
 
       <!-- Voices Grid -->
-      <div id="voicesGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-80 overflow-y-auto pr-1 custom-scrollbar">
+      <div id="voicesGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-72 overflow-y-auto pr-1 custom-scrollbar">
         <!-- Rendered by JS -->
       </div>
 
-      <!-- Voice Pitch & Speed Fine-Tuning -->
+      <!-- 3. 🎭 EMOTION & ROLEPLAY PRESETS (NEW!) -->
       <div class="mt-4 pt-3.5 border-t border-slate-800/80">
         <div class="flex items-center justify-between mb-2">
-          <span class="text-xs font-bold text-slate-300 uppercase tracking-wider">Voice Controls</span>
-          <button onclick="resetSliders()" class="text-[11px] text-purple-400 hover:underline">Reset to Normal</button>
+          <div class="flex items-center gap-1.5">
+            <span class="text-xs font-bold text-slate-200 uppercase tracking-wider">🎭 Roleplay Emotions</span>
+            <span class="text-[10px] bg-purple-950 text-purple-300 border border-purple-800/60 px-1.5 py-0.5 rounded font-medium">1-Click</span>
+          </div>
+          <button onclick="applyEmotion('normal')" class="text-[11px] text-purple-400 hover:underline">Reset (Normal)</button>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-          <!-- Speed -->
-          <div class="bg-slate-900/50 p-2.5 rounded-xl border border-slate-800/60">
-            <div class="flex justify-between items-center text-xs text-slate-300 mb-1">
+        <!-- Emotion Preset Buttons Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          <button onclick="applyEmotion('normal')" id="emo-normal" class="emotion-btn active p-2 rounded-xl text-left flex items-center gap-2 bg-slate-900/60">
+            <span class="text-lg">🎭</span>
+            <div>
+              <div class="text-xs font-bold leading-tight">Storyteller</div>
+              <div class="text-[10px] text-slate-400">Natural & Balanced</div>
+            </div>
+          </button>
+
+          <button onclick="applyEmotion('whisper')" id="emo-whisper" class="emotion-btn p-2 rounded-xl text-left flex items-center gap-2 bg-slate-900/60">
+            <span class="text-lg">🤫</span>
+            <div>
+              <div class="text-xs font-bold leading-tight">Whisper / Stealth</div>
+              <div class="text-[10px] text-slate-400">Quiet & Deep</div>
+            </div>
+          </button>
+
+          <button onclick="applyEmotion('action')" id="emo-action" class="emotion-btn p-2 rounded-xl text-left flex items-center gap-2 bg-slate-900/60">
+            <span class="text-lg">⚔️</span>
+            <div>
+              <div class="text-xs font-bold leading-tight">Action / Urgent</div>
+              <div class="text-[10px] text-slate-400">Fast & Energetic</div>
+            </div>
+          </button>
+
+          <button onclick="applyEmotion('cheerful')" id="emo-cheerful" class="emotion-btn p-2 rounded-xl text-left flex items-center gap-2 bg-slate-900/60">
+            <span class="text-lg">✨</span>
+            <div>
+              <div class="text-xs font-bold leading-tight">Cheerful / Cute</div>
+              <div class="text-[10px] text-slate-400">High & Playful</div>
+            </div>
+          </button>
+
+          <button onclick="applyEmotion('dramatic')" id="emo-dramatic" class="emotion-btn p-2 rounded-xl text-left flex items-center gap-2 bg-slate-900/60">
+            <span class="text-lg">🥺</span>
+            <div>
+              <div class="text-xs font-bold leading-tight">Dramatic / Sad</div>
+              <div class="text-[10px] text-slate-400">Slow & Somber</div>
+            </div>
+          </button>
+
+          <button onclick="applyEmotion('boss')" id="emo-boss" class="emotion-btn p-2 rounded-xl text-left flex items-center gap-2 bg-slate-900/60">
+            <span class="text-lg">🧙</span>
+            <div>
+              <div class="text-xs font-bold leading-tight">Mystic / Boss</div>
+              <div class="text-[10px] text-slate-400">Deep & Slow</div>
+            </div>
+          </button>
+        </div>
+
+        <!-- Manual Sliders (Collapsible / Fine-Tuning) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+          <div class="bg-slate-900/40 p-2 rounded-xl border border-slate-800/60">
+            <div class="flex justify-between items-center text-[11px] text-slate-300 mb-1">
               <span>Speech Speed</span>
               <span id="rateLabel" class="text-purple-400 font-bold">Normal (0%)</span>
             </div>
-            <input id="rateRange" type="range" min="-30" max="30" step="5" value="0"
-              class="w-full accent-purple-500 cursor-pointer">
-            <div class="flex justify-between text-[10px] text-slate-500 mt-0.5">
-              <span>0.7x Slow</span>
-              <span>1.0x Normal</span>
-              <span>1.3x Fast</span>
-            </div>
+            <input id="rateRange" type="range" min="-30" max="30" step="5" value="0" class="w-full accent-purple-500 cursor-pointer">
           </div>
 
-          <!-- Pitch -->
-          <div class="bg-slate-900/50 p-2.5 rounded-xl border border-slate-800/60">
-            <div class="flex justify-between items-center text-xs text-slate-300 mb-1">
+          <div class="bg-slate-900/40 p-2 rounded-xl border border-slate-800/60">
+            <div class="flex justify-between items-center text-[11px] text-slate-300 mb-1">
               <span>Voice Pitch</span>
               <span id="pitchLabel" class="text-purple-400 font-bold">Normal (0Hz)</span>
             </div>
-            <input id="pitchRange" type="range" min="-20" max="20" step="5" value="0"
-              class="w-full accent-purple-500 cursor-pointer">
-            <div class="flex justify-between text-[10px] text-slate-500 mt-0.5">
-              <span>Deeper</span>
-              <span>Normal</span>
-              <span>Higher</span>
-            </div>
+            <input id="pitchRange" type="range" min="-25" max="25" step="5" value="0" class="w-full accent-purple-500 cursor-pointer">
           </div>
         </div>
       </div>
     </section>
 
-    <!-- 3. Primary Generate Button -->
+    <!-- 4. Primary Generate Button -->
     <div class="pt-1">
       <button id="generateBtn" onclick="generateAudio()" class="w-full bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 hover:from-purple-500 hover:via-pink-500 hover:to-indigo-500 text-white font-extrabold text-base sm:text-lg py-4 px-6 rounded-2xl shadow-xl shadow-purple-600/30 flex items-center justify-center gap-3 transition transform active:scale-[0.98] disabled:opacity-50">
         <svg class="w-5 h-5 text-white animate-pulse" fill="currentColor" viewBox="0 0 20 20">
           <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd" />
         </svg>
-        <span id="generateBtnText">Generate Natural Voice ⚡</span>
+        <span id="generateBtnText">Generate Character Voice ⚡</span>
       </button>
     </div>
 
-    <!-- 4. Generated Result Audio Card -->
+    <!-- 5. Generated Result Audio Card -->
     <section id="playerCard" class="hidden glass-panel rounded-2xl p-4 sm:p-6 shadow-2xl border-purple-500/50 bg-gradient-to-br from-purple-950/30 via-slate-900/90 to-slate-900/90">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
         <div class="flex items-center gap-3">
@@ -250,15 +316,14 @@
         </a>
       </div>
 
-      <!-- Native Audio Player (Full Controls on Mobile) -->
       <div class="mt-2">
         <audio id="audioPlayer" controls class="w-full h-11 rounded-xl"></audio>
       </div>
     </section>
 
-    <!-- 5. Recent Generations -->
+    <!-- 6. Recent Generations -->
     <section class="glass-panel rounded-2xl p-4 shadow-lg">
-      <div class="flex items-center justify-between mb-2.5">
+      <div class="flex items-center justify-between mb-2">
         <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider">Recent Audio</h3>
         <button onclick="loadHistory()" class="text-xs text-slate-400 hover:text-purple-300">Refresh</button>
       </div>
@@ -287,7 +352,6 @@
       <h3 class="text-lg font-bold text-white mb-1">Open on Any Device</h3>
       <p class="text-xs text-slate-400 mb-3">Scan this QR code with your phone's camera to open instantly.</p>
 
-      <!-- QR Code -->
       <div class="bg-white p-2.5 rounded-2xl inline-block shadow-inner mb-3">
         <img id="phoneQr" src="" alt="QR Code" class="w-44 h-44 rounded-lg object-contain">
       </div>
@@ -304,25 +368,61 @@
   <!-- Application Logic -->
   <script>
     let curatedVoices = [];
-    let selectedVoiceId = "en-US-AvaNeural";
+    let selectedVoiceId = "en-US-AriaNeural"; // Default to Aria for Storytelling!
     let activeFilter = "Recommended";
     let playingSampleVoiceId = null;
 
     const samples = {
-      greeting: "Hello there! Welcome to Persona AI. I can speak any script with a warm, natural human female voice. Try typing your text!",
-      story: "The evening breeze carried the gentle scent of rain through the valley. As Maya looked up at the mountains, she knew that every great journey begins with a single step.",
-      ad: "Looking for studio-grade voiceovers without hiring expensive studios? Meet Persona AI Voice. Lifelike, expressive, and completely free.",
-      hindi: "Namaste! Persona AI mein aapka swagat hai. Aap yahan Hindi aur English dono bhashaon mein natural voiceover bana sakte hain."
+      adventure: "The ancient dragon opened its glowing emerald eyes. 'You dare step into my sanctuary, mortal?' The cavern shook as smoke rolled across the stone floor.",
+      mystery: "Wait... don't move. Listen closely. There is something lurking right above us in the rafters... reach for your dagger, slowly.",
+      companion: "I've got your back! Whatever is waiting on the other side of this dungeon portal, we take it on together. Ready when you are!",
+      greeting: "Greetings adventurer! I am your AI companion and narrator. Paste your Gemini roleplay story, and I will bring your characters to life."
     };
+
+    const emotionPresets = {
+      normal:   { rate: 0,   pitch: 0,   voice: 'en-US-AriaNeural' },
+      whisper:  { rate: -15, pitch: -15, voice: 'en-US-AriaNeural' },
+      action:   { rate: 15,  pitch: 10,  voice: 'en-IN-NeerjaExpressiveNeural' },
+      cheerful: { rate: 10,  pitch: 15,  voice: 'en-US-EmmaNeural' },
+      dramatic: { rate: -20, pitch: -10, voice: 'en-GB-LibbyNeural' },
+      boss:     { rate: -20, pitch: -20, voice: 'en-US-AriaNeural' }
+    };
+
+    function applyEmotion(type) {
+      document.querySelectorAll('.emotion-btn').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.getElementById(`emo-${type}`);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      const preset = emotionPresets[type] || emotionPresets.normal;
+      rateRange.value = preset.rate;
+      pitchRange.value = preset.pitch;
+      updateSliderLabels();
+
+      // Optionally select recommended character voice if not already changed
+      if (preset.voice) {
+        selectVoice(preset.voice);
+      }
+    }
+
+    async function pasteFromClipboard() {
+      try {
+        const text = await navigator.clipboard.readText();
+        if (text) {
+          document.getElementById('textInput').value = text;
+          updateCounters();
+        }
+      } catch (err) {
+        alert("Clipboard permission prompt was blocked. Please tap and hold inside the text box to paste directly!");
+      }
+    }
 
     function setSample(type) {
       const textarea = document.getElementById('textInput');
       textarea.value = samples[type] || "";
       updateCounters();
-      // If Hindi sample, auto select Swara
-      if (type === 'hindi') {
-        selectVoice('hi-IN-SwaraNeural');
-      }
+      if (type === 'mystery') applyEmotion('whisper');
+      else if (type === 'adventure') applyEmotion('normal');
+      else if (type === 'companion') applyEmotion('cheerful');
     }
 
     function clearText() {
@@ -342,24 +442,18 @@
     // Speed & Pitch Sliders
     const rateRange = document.getElementById('rateRange');
     const rateLabel = document.getElementById('rateLabel');
-    rateRange.addEventListener('input', () => {
-      const val = parseInt(rateRange.value);
-      rateLabel.textContent = val === 0 ? "Normal (0%)" : (val > 0 ? `+${val}% Faster` : `${val}% Slower`);
-    });
-
     const pitchRange = document.getElementById('pitchRange');
     const pitchLabel = document.getElementById('pitchLabel');
-    pitchRange.addEventListener('input', () => {
-      const val = parseInt(pitchRange.value);
-      pitchLabel.textContent = val === 0 ? "Normal (0Hz)" : (val > 0 ? `+${val}Hz Higher` : `${val}Hz Deeper`);
-    });
 
-    function resetSliders() {
-      rateRange.value = 0;
-      pitchRange.value = 0;
-      rateLabel.textContent = "Normal (0%)";
-      pitchLabel.textContent = "Normal (0Hz)";
+    function updateSliderLabels() {
+      const r = parseInt(rateRange.value);
+      rateLabel.textContent = r === 0 ? "Normal (0%)" : (r > 0 ? `+${r}% Faster` : `${r}% Slower`);
+      const p = parseInt(pitchRange.value);
+      pitchLabel.textContent = p === 0 ? "Normal (0Hz)" : (p > 0 ? `+${p}Hz Higher` : `${p}Hz Deeper`);
     }
+
+    rateRange.addEventListener('input', updateSliderLabels);
+    pitchRange.addEventListener('input', updateSliderLabels);
 
     // App Initialization
     async function initApp() {
@@ -414,7 +508,6 @@
           </div>
 
           <div class="mt-2.5 flex items-center justify-between pt-2 border-t border-slate-800/80 text-xs">
-            <!-- Sample Audition Button -->
             <button onclick="playSample('${voice.id}', event)" class="sample-btn flex items-center gap-1 text-[11px] font-semibold ${
               isPlayingThisSample ? 'text-pink-400 animate-pulse' : 'text-purple-300 hover:text-white'
             }">
@@ -458,7 +551,6 @@
       }
     }
 
-    // Play Voice Preview Sample
     function playSample(voiceId, event) {
       event.stopPropagation();
       const samplePlayer = document.getElementById('samplePlayer');
@@ -472,7 +564,7 @@
 
       playingSampleVoiceId = voiceId;
       samplePlayer.src = `/api/sample/${voiceId}`;
-      samplePlayer.play().catch(e => console.log("Audio autoplay restriction:", e));
+      samplePlayer.play().catch(e => console.log("Autoplay error:", e));
       renderVoices(activeFilter === 'all' ? curatedVoices : curatedVoices.filter(v => v.category === activeFilter));
 
       samplePlayer.onended = () => {
@@ -481,19 +573,28 @@
       };
     }
 
-    // Generate Full Audio
+    // Generate Audio
     async function generateAudio() {
-      const text = document.getElementById('textInput').value.trim();
+      let text = document.getElementById('textInput').value.trim();
       if (!text) {
-        alert("Please enter some text in the script box first!");
+        alert("Please paste your roleplay script or text first!");
         document.getElementById('textInput').focus();
         return;
+      }
+
+      // If Clean Markdown option is checked, strip asterisks and clean RPG markdown
+      if (document.getElementById('cleanMarkdown').checked) {
+        // Strip markdown asterisks like **bold** or *whisper*
+        text = text.replace(/\*\*(.*?)\*\*/g, '$1')
+                   .replace(/\*(.*?)\*/g, '$1')
+                   .replace(/^#+\s+/gm, '') // Remove # headers
+                   .replace(/`{1,3}.*?`{1,3}/gs, ''); // Remove codeblocks
       }
 
       const btn = document.getElementById('generateBtn');
       const btnText = document.getElementById('generateBtnText');
       btn.disabled = true;
-      btnText.textContent = "Generating Neural Voice...";
+      btnText.textContent = "Generating Character Voice...";
 
       try {
         const res = await fetch('/api/generate', {
@@ -519,7 +620,7 @@
         alert("Generation error: " + err.message);
       } finally {
         btn.disabled = false;
-        btnText.textContent = "Generate Natural Voice ⚡";
+        btnText.textContent = "Generate Character Voice ⚡";
       }
     }
 
@@ -538,7 +639,6 @@
       audioPlayer.play().catch(() => {});
     }
 
-    // History
     async function loadHistory() {
       try {
         const res = await fetch('/api/history');
@@ -577,14 +677,13 @@
       }
     }
 
-    // Share / Open on Phone
     async function handleShare() {
       const url = window.location.origin;
       if (navigator.share) {
         try {
           await navigator.share({
             title: 'Persona AI Voice Generator',
-            text: 'Generate natural human AI female voices online for free:',
+            text: 'Generate natural AI character voices online for free:',
             url: url
           });
           return;
@@ -610,7 +709,6 @@
       });
     }
 
-    // Start App
     initApp();
   </script>
 </body>
